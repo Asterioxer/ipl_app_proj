@@ -7,8 +7,10 @@ import iplImages from "../data/ipl_images.json";
 
 // Dynamically import the 3D scene to avoid SSR issues
 const Scene3D = dynamic(() => import("./components/Scene3D"), { ssr: false });
+const KnowledgeGraph3D = dynamic(() => import("./components/KnowledgeGraph3D"), { ssr: false });
 
 export default function Home() {
+  const [appMode, setAppMode] = useState("game"); // 'game' or 'explorer'
   const [gameState, setGameState] = useState("start"); // 'start', 'playing', 'loading', 'result'
   const [history, setHistory] = useState([]);
   const [currentQuestion, setCurrentQuestion] = useState(null);
@@ -88,11 +90,63 @@ export default function Home() {
     exit: { opacity: 0, y: -30, scale: 0.95, transition: { duration: 0.3 } }
   };
 
+  if (appMode === "explorer") {
+    return (
+      <div style={{ position: 'relative', width: '100vw', height: '100vh', overflow: 'hidden' }}>
+        <KnowledgeGraph3D />
+        <button 
+          onClick={() => setAppMode("game")}
+          style={{
+            position: 'absolute',
+            top: '1.5rem',
+            left: '1.5rem',
+            zIndex: 50,
+            background: 'rgba(59, 130, 246, 0.2)',
+            border: '1px solid rgba(59, 130, 246, 0.5)',
+            color: '#60a5fa',
+            padding: '0.6rem 1.2rem',
+            borderRadius: '30px',
+            cursor: 'pointer',
+            fontWeight: 'bold',
+            backdropFilter: 'blur(5px)'
+          }}
+        >
+          &larr; Back to Game
+        </button>
+      </div>
+    );
+  }
+
   return (
     <>
       <div className="bg-blobs"></div>
       <Scene3D />
       
+      {/* Explorer Toggle Button */}
+      <button 
+        onClick={() => setAppMode("explorer")}
+        style={{
+          position: 'absolute',
+          top: '1.5rem',
+          right: '1.5rem',
+          zIndex: 50,
+          background: 'rgba(255, 255, 255, 0.1)',
+          border: '1px solid rgba(255, 255, 255, 0.2)',
+          color: 'white',
+          padding: '0.6rem 1.2rem',
+          borderRadius: '30px',
+          cursor: 'pointer',
+          fontWeight: '500',
+          backdropFilter: 'blur(5px)',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px'
+        }}
+      >
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+        Explore Database
+      </button>
+
       <main className="container">
         <AnimatePresence mode="wait">
           <motion.div 
